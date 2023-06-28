@@ -1,7 +1,7 @@
 ﻿from flask import Flask, render_template
 import os
-import subprocess
 import dotenv
+from src.modules import WorkerManager
 
 ### Load .env file
 dotenv.load_dotenv(dotenv_path='../.env')
@@ -21,12 +21,18 @@ def before_request(response):
     }
     for header, value in headers.items():
         response.headers[header] = value
-    
+
     return response
+
 
 @app.route('/', methods=['GET'])
 def process_root():
     return render_template('index.html')
+
+
+@app.route('/api/test_api', methods=['GET'])
+def process_test_api():
+    return WorkerManager.handle_test_api()
 
 
 if __name__ == '__main__':
