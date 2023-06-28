@@ -17,7 +17,7 @@ app = Flask(__name__, template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 @app.after_request
 def before_request(response):
     headers = {
-        'Cache-Control': 'public, max-age=3600'
+        'Cache-Control': 'no-cache, no-store'
     }
     for header, value in headers.items():
         response.headers[header] = value

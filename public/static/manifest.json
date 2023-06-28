@@ -1,6 +1,6 @@
 {
-    "short_name": "Segmentation",
-    "name": "Segmentation",
+    "short_name": "Data",
+    "name": "Data",
     "icons": [
         {
             "src": "header/thumbnail.png",

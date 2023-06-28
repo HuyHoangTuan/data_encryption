@@ -1,6 +1,6 @@
 import React from "react";
 import {Route, createBrowserRouter, createRoutesFromElements} from 'react-router-dom';
-
+import PublicRoute from "./PublicRoute";
 
 const CustomRouter = createBrowserRouter(
     createRoutesFromElements(

@@ -14,5 +14,6 @@ module.exports = merge(commonConfig, {
   output: {
     filename: "static/js/bundle.min.js",
     path: resolve(__dirname, "../../../public"),
+    publicPath: '/'
   }, 
 });
