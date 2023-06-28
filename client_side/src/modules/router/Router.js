@@ -22,7 +22,7 @@ const CustomRouter = createBrowserRouter(
                         </React.Fragment>
                     </PublicRoute>
                 }
-            />,
+            />
         ]
     )
 );

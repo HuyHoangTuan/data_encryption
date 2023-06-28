@@ -6,9 +6,9 @@
   "scripts": 
   {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "webpack serve --config=configs/webpack/dev.js",
+    "start-dev": "webpack serve --config configs/webpack/dev.js --mode development",
     "clean-dist": "rimraf ../public/*",
-    "build": "npm run clean-dist && webpack --config=configs/webpack/prod.js",
+    "build": "npm run clean-dist && webpack --config configs/webpack/prod.js --mode production",
     "start": "npm run start-dev"
   },
   "devDependencies": {
