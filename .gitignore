@@ -1,5 +1,9 @@
 .idea
 
+
+public/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -162,4 +166,3 @@ cython_debug/
 #.idea/
 
 */node_modules
-public
