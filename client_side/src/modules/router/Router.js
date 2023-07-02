@@ -1,6 +1,8 @@
 import React from "react";
 import {Route, createBrowserRouter, createRoutesFromElements} from 'react-router-dom';
 import PublicRoute from "./PublicRoute";
+import GUI from "../gui/GUI";
+import "../gui/GUI.css";
 
 const CustomRouter = createBrowserRouter(
     createRoutesFromElements(
@@ -16,9 +18,7 @@ const CustomRouter = createBrowserRouter(
                 element = {
                     <PublicRoute>
                         <React.Fragment>
-                            <h1>
-                                Erase me then add GUI here
-                            </h1>
+                            <GUI/>
                         </React.Fragment>
                     </PublicRoute>
                 }
