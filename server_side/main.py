@@ -1,4 +1,4 @@
-﻿from flask import Flask, render_template
+﻿from flask import Flask, render_template, request, jsonify
 import os
 import dotenv
 from src.modules import WorkerManager
@@ -34,6 +34,13 @@ def process_root():
 def process_test_api():
     return WorkerManager.handle_test_api()
 
+
+@app.route('/api/postRequestTest', methods=['POST'])
+def process_post_request():
+    data = request.get_json()
+    print(data)
+    response_data = {"message": "Post response"}
+    return jsonify(response_data)
 
 if __name__ == '__main__':
     app.run(

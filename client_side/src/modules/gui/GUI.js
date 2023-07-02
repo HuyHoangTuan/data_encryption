@@ -1,6 +1,7 @@
 import {Button, Paper, Checkbox, FormControlLabel, TextField, FormControl, Box, styled} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"
 import React, {useState} from "react";
+import axios from "axios";
 import "./GUI.css"
 
 
@@ -16,6 +17,18 @@ const GUI = () =>
       textAlign: 'center',
       color: theme.palette.text.secondary,
     }));
+
+    const onProcessRequest = async () => {
+      axios
+      .post("http://127.0.0.1:6969/api/postRequestTest", { data: "Hello from client" })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    };
+
     return (
         <>
           <Box sx={{ flexGrow: 1, marginTop: "200px"}}>
@@ -49,7 +62,7 @@ const GUI = () =>
               <Grid sx={{ order: { xs: 2, sm: 1, mt: 200 } }}>
                 <Item>
                   <div id="process-button">
-                    <Button variant = "contained">
+                    <Button variant = "contained" onClick={onProcessRequest}>
                       Process
                     </Button>
                   </div>
