@@ -39,16 +39,18 @@ def process_test_api():
 @app.route('/api/postRequestTest', methods=['POST'])
 def process_post_request():
     file = None
+    
     for index, fileName in enumerate(request.files):
         file = request.files[fileName]
         if index == 0:
             break
-    print(file)
+            
     if file != None:
         # todo: do smt
         pass
-    response_data = {"message": "Post response"}
-    return jsonify(response_data)
+    return {
+        'status': 'success',
+    }
 
 if __name__ == '__main__':
     app.run(
