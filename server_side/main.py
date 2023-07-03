@@ -1,6 +1,7 @@
 ﻿from flask import Flask, render_template, request, jsonify
 import os
 import dotenv
+from flask_cors import CORS
 from src.modules import WorkerManager
 
 ### Load .env file
@@ -12,10 +13,10 @@ STATIC_PATH = os.getenv("STATIC_PATH")
 ### End load .env file
 
 app = Flask(__name__, template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
-
+CORS(app, origins='*')
 
 @app.after_request
-def before_request(response):
+def after_request(response):
     headers = {
         'Cache-Control': 'no-cache, no-store'
     }
@@ -37,8 +38,15 @@ def process_test_api():
 
 @app.route('/api/postRequestTest', methods=['POST'])
 def process_post_request():
-    data = request.get_json()
-    print(data)
+    file = None
+    for index, fileName in enumerate(request.files):
+        file = request.files[fileName]
+        if index == 0:
+            break
+    print(file)
+    if file != None:
+        # todo: do smt
+        pass
     response_data = {"message": "Post response"}
     return jsonify(response_data)
 

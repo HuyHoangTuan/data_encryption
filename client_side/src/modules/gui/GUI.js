@@ -1,15 +1,15 @@
 import {Button, Paper, Checkbox, FormControlLabel, TextField, FormControl, Box, styled} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import "./GUI.css"
+import APIManager from "../api/APIManager";
 
 
 const GUI = () =>
 {
-    const [file, setFile] = useState(null);
-    const [fileURL, setFileURL] = useState("");
-
+    const [audioFile, setAudioFile] = useState(null);
+    const [fileName, setFileName] = useState("");
     const Item = styled(Paper)(({ theme }) => ({
       backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
       ...theme.typography.body2,
@@ -19,15 +19,30 @@ const GUI = () =>
     }));
 
     const onProcessRequest = async () => {
-      axios
-      .post("http://127.0.0.1:6969/api/postRequestTest", { data: "Hello from client" })
-      .then(response => {
-        console.log(response.data);
+      const formData = new FormData();
+      formData.append("file", audioFile);
+
+      let headers = {
+        "Content-Type": "multipart/form-data",
+      }
+      let params = {}
+      
+      let test = APIManager.post('/api/postRequestTest', headers, params, formData);
+      console.log(test);
+      test
+      .then((res) => {
+        console.log(res);
       })
-      .catch(error => {
-        console.error(error);
+      .catch((err) => {
+        console.log(`Err: ${err}`);
       });
     };
+
+    let handleFile = (e) =>{
+      
+      setAudioFile(e.target.files[0]);
+      setFileName(e.target.files[0].name)
+    }
 
     return (
         <>
@@ -42,11 +57,19 @@ const GUI = () =>
             >
               <Grid sx={{ order: { xs: 2, sm: 1, mt: 200} }}>
                 <Item>
-                  <div id="upload-button">
-                    <form>
-                      <input type="file" name="file" accept=".wav"/>
+                  <form
+
+                  >
+                      <input  
+                        
+                        type="file" 
+                        accept="audio/*"
+                        onChange={handleFile}
+                      />
+                      <span>
+                        {fileName}
+                      </span>
                     </form>
-                  </div>
                 </Item>
               </Grid>
               <Grid sx={{ order: { xs: 2, sm: 1, mt: 200 } }}>
