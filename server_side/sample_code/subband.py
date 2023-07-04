@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from mp3 import make_mp3_analysisfb, make_mp3_synthesisfb
 from nothing import donothing,idonothing
 from frame import frame_sub_analysis,frame_sub_synthesis
+import io
 
 def plot_frequency(H,fs):
 
@@ -32,6 +33,35 @@ def plot_frequency(H,fs):
     plt.title("Μέτρο των συναρτήσεων μεταφοράς των φίλτρων στη συχνοτητα z")
     plt.show()
 
+def plotSubbands(Ytot, M):
+    # Create a figure and axes
+    fig, ax = plt.subplots()
+    fig.set_size_inches(18.5, 10.5, forward=True)
+    subbands = np.transpose(Ytot)
+    subbands_freq = np.fft.fft(subbands)
+
+    # Calculate the frequency values for the x-axis
+    sample_rate = 44100  # Assuming a sample rate of 1000 Hz
+    frequency = np.fft.fftfreq(subbands.shape[1], d=1/sample_rate)
+
+    color = plt.cm.rainbow(np.linspace(0, 1, M))
+    # Plot the magnitude spectrum for each subband
+    for i in range(subbands_freq.shape[0]):
+        magnitude_spectrum = np.abs(subbands_freq[i])
+        ax.plot(frequency, magnitude_spectrum, label=f"Subband {i+1}", c = color[i])
+
+    # Add labels and a legend
+    ax.set_xlabel("Frequency (Hz)")
+    ax.set_ylabel("Magnitude")
+    ax.legend(bbox_to_anchor=(1, 1))
+
+    # Encode the plot as a byte array
+    image_stream = io.BytesIO()
+    plt.savefig(image_stream, format='png')
+    image_stream.seek(0)
+    image_bytes = image_stream.read()
+    plt.close()
+    return image_bytes
 
 def codec0(wavin, h, M, N):
 
