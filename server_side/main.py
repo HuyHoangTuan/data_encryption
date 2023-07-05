@@ -1,4 +1,4 @@
-﻿from flask import Flask, render_template, request, jsonify
+﻿from flask import Flask, render_template, request, make_response, abort
 import os
 import dotenv
 from flask_cors import CORS
@@ -35,10 +35,11 @@ def process_root():
 def process_test_api():
     return WorkerManager.handle_test_api()
 
-
-@app.route('/api/postRequestTest', methods=['POST'])
-def process_post_request():
+@app.route('/api/compress_audio', methods=['POST'])
+def process_compress_audio():
     file = None
+    subbands = request.form.get('subbands')
+    samples = request.form.get('samples')
     
     for index, fileName in enumerate(request.files):
         file = request.files[fileName]
@@ -46,11 +47,16 @@ def process_post_request():
             break
             
     if file != None:
-        # todo: do smt
-        pass
-    return {
-        'status': 'success',
-    }
+        if subbands is None: subbands = 32
+        if samples is None: samples = 36
+        data = WorkerManager.handle_compress_audio(file=file, subbands= subbands, samples= samples)
+        # print(data)
+        response = make_response(data)
+        response.headers['Content-Type'] = 'image/png'
+        response.headers['Content-Disposition'] = 'inline; filename=result.png'
+        return response
+    else:
+        return abort(415, 'Unsupported Media Type')
 
 if __name__ == '__main__':
     app.run(
