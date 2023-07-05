@@ -13,3 +13,8 @@ def handle_test_api(**kwargs):
 def handle_compress_audio(**kwargs):
     worker = worker_manager.submit(CompressAudio.process, **kwargs)
     return worker.result()
+
+
+def handle_get_data_audio(**kwargs):
+    worker = worker_manager.submit(GetDataAudio.process, **kwargs)
+    return worker.result()

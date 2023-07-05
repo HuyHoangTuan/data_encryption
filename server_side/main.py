@@ -15,6 +15,7 @@ STATIC_PATH = os.getenv("STATIC_PATH")
 app = Flask(__name__, template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 CORS(app, origins='*')
 
+
 @app.after_request
 def after_request(response):
     headers = {
@@ -35,21 +36,22 @@ def process_root():
 def process_test_api():
     return WorkerManager.handle_test_api()
 
+
 @app.route('/api/compress_audio', methods=['POST'])
 def process_compress_audio():
     file = None
     subbands = request.form.get('subbands')
     samples = request.form.get('samples')
-    
+
     for index, fileName in enumerate(request.files):
         file = request.files[fileName]
         if index == 0:
             break
-            
+
     if file != None:
         if subbands is None: subbands = 32
         if samples is None: samples = 36
-        data = WorkerManager.handle_compress_audio(file=file, subbands= subbands, samples= samples)
+        data = WorkerManager.handle_compress_audio(file=file, subbands=subbands, samples=samples)
         # print(data)
         response = make_response(data)
         response.headers['Content-Type'] = 'image/png'
@@ -57,6 +59,27 @@ def process_compress_audio():
         return response
     else:
         return abort(415, 'Unsupported Media Type')
+
+
+@app.route('/api/get_data_audio', methods=['POST'])
+def process_get_data_audio():
+    file = None
+    subbands = request.form.get('subbands')
+    samples = request.form.get('samples')
+
+    for index, fileName in enumerate(request.files):
+        file = request.files[fileName]
+        if index == 0:
+            break
+
+    if file != None:
+        if subbands is None: subbands = 32
+        if samples is None: samples = 36
+        data = WorkerManager.handle_get_data_audio(file=file, subbands=subbands, samples=samples)
+        return data
+    else:
+        return abort(415, 'Unsupported Media Type')
+
 
 if __name__ == '__main__':
     app.run(
