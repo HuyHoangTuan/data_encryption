@@ -8,6 +8,7 @@ from parameters import *
 import matplotlib.pyplot as plt 
 from matplotlib.pyplot import cm
 import io
+import os
 
 import prototype_filter
 import subband_filtering
@@ -132,6 +133,8 @@ def main(inwavfile, outmp3file, bitrate):
                          subband_samples_quantized)
   total_subbands = np.reshape(total_subbands, (32, -1))
   plotSubbands(total_subbands)
+  print("Compression Rate: (by bitrate): ", (input_buffer.nbits * input_buffer.fs / 1000) / bitrate)
+  print("Compression Rate: (by filesize): ", os.stat(inwavfile).st_size / os.stat(outmp3file).st_size)
 
 if __name__ == "__main__":
   if len(sys.argv) < 3:
