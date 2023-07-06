@@ -4,10 +4,49 @@ import numpy as np
 import psychoacoustic as psycho
 from common import *
 from parameters import *
-	
+
+import matplotlib.pyplot as plt 
+from matplotlib.pyplot import cm
+import io
+
 import prototype_filter
 import subband_filtering
 import quantization
+
+def plotSubbands(subbands, M=32):
+    # Create a figure and axes
+    fig, ax = plt.subplots()
+    fig.set_size_inches(18.5, 10.5, forward=True)
+    subbands_freq = np.fft.fft(subbands)
+
+    # Calculate the frequency values for the x-axis
+    sample_rate = 44100  # Assuming a sample rate of 1000 Hz
+    frequency = np.fft.fftfreq(subbands.shape[1], d=1/sample_rate)
+
+    color = cm.rainbow(np.linspace(0, 1, M))
+    # Plot the magnitude spectrum for each subband
+    for i in range(subbands_freq.shape[0]):
+        magnitude_spectrum = np.abs(subbands_freq[i])
+        ax.plot(frequency, magnitude_spectrum, label=f"Subband {i+1}", c = color[i])
+
+    # Add labels and a legend
+    ax.set_xlabel("Frequency (Hz)")
+    ax.set_ylabel("Magnitude")
+    ax.legend(bbox_to_anchor=(1, 1))
+
+    # output_filename = 'my_plot.png'
+    # plt.savefig(output_filename, dpi=300, bbox_inches='tight')
+    
+    # Show the plot
+    # plt.show()
+    
+    # Encode the plot as a byte array
+    image_stream = io.BytesIO()
+    plt.savefig(image_stream, format='png')
+    image_stream.seek(0)
+    image_bytes = image_stream.read()
+    plt.close()
+    return image_bytes
 
 def main(inwavfile, outmp3file, bitrate):
   """Encoder main function."""
@@ -20,7 +59,7 @@ def main(inwavfile, outmp3file, bitrate):
   # Read WAVE file and set MPEG encoder parameters.
   input_buffer = WavRead(inwavfile)
   params = EncoderParameters(input_buffer.fs, input_buffer.nch, bitrate)
-  
+  total_subbands = np.empty((1,32,0))
 
   
   # Subband filter calculation from baseband prototype.
@@ -53,7 +92,10 @@ def main(inwavfile, outmp3file, bitrate):
       """
       for ch in range(params.nch):
         subband_samples[ch,:,frm] = subband_filtering.subband_filtering(input_buffer.audio[ch].reversed(), baseband_filter)
-      
+
+    total_subbands = np.concatenate((total_subbands, subband_samples), axis=2)
+      # print(total_subbands.shape)
+    
     # Declaring arrays for keeping table indices of calculated scalefactors and bits allocated in subbands.
     # Number of bits allocated in subband is either 0 or in range [2,15].
     scfindices = np.zeros((params.nch, N_SUBBANDS), dtype='uint8')
@@ -88,7 +130,8 @@ def main(inwavfile, outmp3file, bitrate):
                          subband_bit_allocation,
                          scfindices,
                          subband_samples_quantized)
-
+  total_subbands = np.reshape(total_subbands, (32, -1))
+  plotSubbands(total_subbands)
 
 if __name__ == "__main__":
   if len(sys.argv) < 3:
