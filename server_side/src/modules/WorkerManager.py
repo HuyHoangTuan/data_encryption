@@ -18,3 +18,7 @@ def handle_compress_audio(**kwargs):
 def handle_get_data_audio(**kwargs):
     worker = worker_manager.submit(GetDataAudio.process, **kwargs)
     return worker.result()
+
+def handle_get_plot_image(**kwargs):
+    worker = worker_manager.submit(GetPlotImage.process, **kwargs)
+    return worker.result()

@@ -41,7 +41,7 @@ def process_test_api():
 def process_compress_audio():
     file = None
     subbands = request.form.get('subbands')
-    samples = request.form.get('samples')
+    bit_rate = request.form.get('bit_rate')
 
     for index, fileName in enumerate(request.files):
         file = request.files[fileName]
@@ -50,13 +50,9 @@ def process_compress_audio():
 
     if file != None:
         if subbands is None: subbands = 32
-        if samples is None: samples = 36
-        data = WorkerManager.handle_compress_audio(file=file, subbands=subbands, samples=samples)
-        # print(data)
-        response = make_response(data)
-        response.headers['Content-Type'] = 'image/png'
-        response.headers['Content-Disposition'] = 'inline; filename=result.png'
-        return response
+        if bit_rate is None: bit_rate = 320
+        data = WorkerManager.handle_compress_audio(file=file, subbands=subbands, bit_rate=bit_rate)
+        return data
     else:
         return abort(415, 'Unsupported Media Type')
 
@@ -64,7 +60,6 @@ def process_compress_audio():
 @app.route('/api/get_data_audio', methods=['POST'])
 def process_get_data_audio():
     file = None
-    subbands = request.form.get('subbands')
     samples = request.form.get('samples')
 
     for index, fileName in enumerate(request.files):
@@ -73,14 +68,32 @@ def process_get_data_audio():
             break
 
     if file != None:
-        if subbands is None: subbands = 32
         if samples is None: samples = 36
-        data = WorkerManager.handle_get_data_audio(file=file, subbands=subbands, samples=samples)
+        data = WorkerManager.handle_get_data_audio(file=file, samples=samples)
         return data
     else:
         return abort(415, 'Unsupported Media Type')
 
+@app.route('/api/get_plot_image', methods=['POST'])
+def process_get_plot_image():
+    file = None
+    bit_rate = request.form.get('bit_rate')
 
+    for index, fileName in enumerate(request.files):
+        file = request.files[fileName]
+        if index == 0:
+            break
+
+    if file != None:
+        if bit_rate is None: bit_rate = 320
+        data = WorkerManager.handle_get_plot_image(file=file, bit_rate=bit_rate)
+        response = make_response(data)
+        response.headers['Content-Type'] = 'image/png'
+        response.headers['Content-Disposition'] = 'inline; filename=result.png'
+        return response
+    else:
+        return abort(415, 'Unsupported Media Type')
+    
 if __name__ == '__main__':
     app.run(
         host=ADDRESS,

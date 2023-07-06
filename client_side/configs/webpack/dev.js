@@ -5,6 +5,7 @@ const path = require('path');
 module.exports = merge(commonConfig, {
     mode: "development",
     devServer: {
+        host: '0.0.0.0',
         port: process.env.REACT_APP_PORT,
         static: {
             directory: path.join(__dirname, '../../static'),

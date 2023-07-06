@@ -1,6 +1,6 @@
 import numpy as np
 
-def scaled_fft_db(x):
+def process(x):
     """ 
         1) Computes a 512-point Hann window and use it to weigh the input data.
         2) Computes the DFT of the weighed input, take the magnitude in dBs and
