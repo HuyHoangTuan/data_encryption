@@ -1,41 +1,36 @@
 import numpy as np
+import scipy.fftpack as spfft
 
-def frameDCT(Y):
+def DCToMatrix(N):
+    # produces an odd DCT matrix with size NxN
+    # Gerald Schuller, Dec. 2015
 
-    # defining basic parameters
-    N,M = Y.shape
-    F = np.zeros((N,N))
-    k = np.arange(0,N)
-    l = np.arange(0,N)
+    y = np.zeros((N, N, 1));
 
-    # creating meshgrids to account for every possible combination of k,l
-    K,L = np.meshgrid(k,l)
-    F[: ,:] = np.sqrt(2/N)*np.cos(np.pi/N*K*(L+1/2))
-    F = np.transpose(F)
-    F[0,:] = np.sqrt(1/N)
+    for n in range(N):
+        for k in range(N):
+            y[n, k, 0] = np.sqrt(2.0 / N) * np.cos(np.pi / N * (k + 0.5) * (n + 0.5));
+            # y(n,k)=cos(pi/N*(k-0.5)*(n-1));
+    return y
+
+
+# The DCT4 transform:
+def DCT4(samples):
+    #Argument: 3−D array of samples, shape (y,x,# of blocks), each row correspond to 1 row #to apply the DCT to.
+    #Output: 3−D array where each row ist DCT4 transformed, orthonormal.
+    #use a DCT3 to implement a DCT4:
+    # print(samples.shape)
+    N = None
+    if(len(samples.shape)==2):
+        _,N= samples.shape
+    else:
+        N = samples.shape[0]
     
-    # producing Ytrans as a matrix multiplication of F,Y
-    Ytrans = np.matmul(F,Y)
-    c = np.reshape(Ytrans,(M*N,1),order='F')
-
-    return c.squeeze()
-
-
-def iframeDCT(c,N,M):
     
-    # initializations and parameters
-    Ytrans = np.reshape(c,(N,M),order='F')
-    F = np.zeros((N,N))
-    k = np.arange(0,N)
-    l = np.arange(0,N)
-    K,L = np.meshgrid(k,l)
-    F[: ,:] = np.sqrt(2/N)*np.cos(np.pi/N*K*(L+1/2))
-    F = np.transpose(F)
-    F[0,:] = np.sqrt(1/N)
-
-    # inverting the above function
-    Yh = np.matmul(np.linalg.inv(F),Ytrans)
-    
-    return Yh
-
-
+    samplesup= np.zeros(2 * N)
+    #upsample signal:
+    samplesup[1::2]=samples
+    # print(samplesup)
+    # print(samplesup.shape)
+    y=spfft.dct(samplesup,type=3,norm='ortho') * np.sqrt(2)
+    return y[0:N]

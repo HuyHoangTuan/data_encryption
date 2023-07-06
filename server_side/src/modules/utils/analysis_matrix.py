@@ -1,6 +1,6 @@
 import numpy as np
-from mult_matrix import *
-from dct import *
+from src.modules.utils.matrix import *
+from src.modules.utils.dct import *
 
 def ha2Pa3d(ha,N):
         #usage: Pa=ha2Pa3d(ha,N);
@@ -13,17 +13,17 @@ def ha2Pa3d(ha,N):
         #shl@idmt.fhg.de
         #Dec-2-15
 
-        L=len(ha);
+        L=len(ha)
 
-        blocks=int(np.ceil(L/N));
+        blocks=int(np.ceil(L/N))
         #print(blocks)
 
-        Pa=np.zeros((N,N,blocks));
+        Pa=np.zeros((N,N,blocks))
 
         for k in range(N): #subband
           for m in range(blocks):  #m: block number 
             for nphase in range(N): #nphase: Phase 
-              n=m*N+nphase;
+              n=m*N+nphase
               #indexing like impulse response, phase index is reversed (N-np):
               Pa[N-1-nphase,k,m]=ha[n]*np.sqrt(2.0/N)*np.cos(np.pi/N*(k+0.5)*(blocks*N-1-n-N/2.0+0.5)); 
 
@@ -40,9 +40,9 @@ def ha2Fa3d(ha,N):
         #Gerald Schuller
         #shl@idmt.fhg.de
         #Dec-2-15
-        print("ha2Pa3d:")
-        Pa=ha2Pa3d(ha,N);
-        print("polmatmult DCT:")
+        # print("ha2Pa3d:")
+        Pa=ha2Pa3d(ha,N)
+        # print("polmatmult DCT:")
         Fa=polmatmult(Pa,DCToMatrix(N))
         #round zeroth polyphase component to 7 decimals after point:
         Fa=np.around(Fa,8)
@@ -62,7 +62,7 @@ def ha2Fa3d_fast(qmfwin,N):
         #shl@idmt.fhg.de
         #Jan-23-16
         overlap=int(len(qmfwin)/N)
-        print("overlap=", overlap)
+        # print("overlap=", overlap)
         Fa=np.zeros((N,N,overlap))
         for m in range(int(overlap/2)):
            Fa[:,:,2*m]+=np.fliplr(np.diag(np.flipud(-qmfwin[m*2*N:(m*2*N+int(N/2))]*((-1)**m)),k=int(-N/2)))

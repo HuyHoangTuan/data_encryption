@@ -1,7 +1,7 @@
 
 import numpy as np
-from dct import *
-from mult_matrix import *
+from src.modules.utils.dct import *
+from src.modules.utils.matrix import *
 
 def hs2Ps3d(hs,N):
         #usage: Ps=hs2Ps3d(hs,N);
@@ -30,7 +30,7 @@ def hs2Ps3d(hs,N):
 
         return Ps
     
-def hs2Fs3d_fast(qmfwin,N):
+def hs2Fs3d_fast(qmfwin, N):
         #usage: Fs=hs2Fs3d_fast(hs,N);
         #produces the synthesis polyphase folding matrix Fs with all polyphase components
         #in 3D matrix representation
@@ -47,7 +47,7 @@ def hs2Fs3d_fast(qmfwin,N):
         #Transpose first two dimensions to obtain synthesis folding matrix:
         #Fs=np.transpose(Fa, (1, 0, 2))
         overlap=int(len(qmfwin)/N)
-        print("overlap=", overlap)
+        # print("overlap=", overlap)
         Fs=np.zeros((N,N,overlap))
         for m in range(int(overlap/2)):
            Fs[:,:,2*m]+=np.fliplr(np.diag(np.flipud(qmfwin[m*2*N:(m*2*N+int(N/2))]*((-1)**m)),k=int(N/2)))
