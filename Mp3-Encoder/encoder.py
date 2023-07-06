@@ -60,7 +60,7 @@ def main(inwavfile, outmp3file, bitrate):
   # Read WAVE file and set MPEG encoder parameters.
   input_buffer = WavRead(inwavfile)
   params = EncoderParameters(input_buffer.fs, input_buffer.nch, bitrate)
-  total_subbands = np.empty((1,32,0))
+  total_subbands = np.empty((input_buffer.nch,32,0))
 
   
   # Subband filter calculation from baseband prototype.
@@ -131,8 +131,9 @@ def main(inwavfile, outmp3file, bitrate):
                          subband_bit_allocation,
                          scfindices,
                          subband_samples_quantized)
-  total_subbands = np.reshape(total_subbands, (32, -1))
-  plotSubbands(total_subbands)
+  
+  for i in range(total_subbands.shape[0]):
+    plotSubbands(total_subbands[i])
   print("Compression Rate: (by bitrate): ", (input_buffer.nbits * input_buffer.fs / 1000) / bitrate)
   print("Compression Rate: (by filesize): ", os.stat(inwavfile).st_size / os.stat(outmp3file).st_size)
 
