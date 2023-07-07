@@ -12,25 +12,32 @@ import src.modules.utils.Quantization as Quantization
 
 def plotSubbands(subbands, M=32):
     # Create a figure and axes
-    fig, ax = plt.subplots()
-    fig.set_size_inches(18.5, 10.5, forward=True)
-    subbands_freq = np.fft.fft(subbands)
+    fig, axes = plt.subplots(1, subbands.shape[0])
 
-    # Calculate the frequency values for the x-axis
-    sample_rate = 44100  # Assuming a sample rate of 1000 Hz
-    frequency = np.fft.fftfreq(subbands.shape[1], d=1/sample_rate)
+    axes = np.array(axes).flatten()
 
-    color = cm.rainbow(np.linspace(0, 1, M))
-    # Plot the magnitude spectrum for each subband
-    for i in range(subbands_freq.shape[0]):
-        magnitude_spectrum = np.abs(subbands_freq[i])
-        ax.plot(frequency, magnitude_spectrum, label=f"Subband {i+1}", c = color[i])
+    for i in range(subbands.shape[0]):
+        ax = axes[i]
+        fig.set_size_inches(18.5, 10.5, forward=True)
+        #print(subbands[i].shape)
+        subbands_freq = np.fft.fft(subbands[i].tolist())
 
-    # Add labels and a legend
-    ax.set_xlabel("Frequency (Hz)")
-    ax.set_ylabel("Magnitude")
-    ax.legend(bbox_to_anchor=(1, 1))
+        # Calculate the frequency values for the x-axis
+        sample_rate = 44100  # Assuming a sample rate of 1000 Hz
+        frequency = np.fft.fftfreq(subbands[i].shape[1], d=1/sample_rate)
 
+        color = cm.rainbow(np.linspace(0, 1, M))
+        # Plot the magnitude spectrum for each subband
+        for j in range(subbands_freq.shape[0]):
+            magnitude_spectrum = np.abs(subbands_freq[j])
+            ax.plot(frequency, magnitude_spectrum, label=f"Subband {j+1}", c = color[j])
+
+        # Add labels and a legend
+        ax.set_xlabel(f'{i}: Frequency (Hz)')
+        ax.set_ylabel(f'{i}: Magnitude')
+        ax.legend(bbox_to_anchor=(1, 1))
+
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
     # output_filename = 'my_plot.png'
     # plt.savefig(output_filename, dpi=300, bbox_inches='tight')
     
@@ -183,7 +190,7 @@ def process_plot_subbands(wav_file, bit_rate):
     
     subband_samples = np.zeros((params.nch, N_SUBBANDS, FRAMES_PER_BLOCK), dtype='float32')
 
-    total_subbands = np.empty((1, N_SUBBANDS ,0))
+    total_subbands = np.empty((input_buffer.nch, N_SUBBANDS ,0))
 
     print(f'Ploting file: {params.nch} -- {input_buffer.nsamples}')
     while input_buffer.nprocessed_samples < input_buffer.nsamples:
@@ -200,8 +207,10 @@ def process_plot_subbands(wav_file, bit_rate):
 
         total_subbands = np.concatenate((total_subbands, subband_samples), axis=2)
 
-    total_subbands = np.reshape(total_subbands, (N_SUBBANDS, -1))
-    return plotSubbands(total_subbands, N_SUBBANDS)
+    if params.nch == 2:
+        return plotSubbands(np.asanyarray([total_subbands[0], total_subbands[1]]))
+    else:
+        return plotSubbands(np.asarray([total_subbands[0]]))
 
 def save_mp3(outpt_file, params, subband_bit_allocation, scfindices, subband_samples_quantized):
     bitstream_formatting(outpt_file, params, subband_bit_allocation, scfindices, subband_samples_quantized)

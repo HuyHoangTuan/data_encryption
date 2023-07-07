@@ -174,7 +174,7 @@ const GUI = () => {
                                 <TextField
                                     disabled
                                     label="Old/New Size"
-                                    value={compressRateByFileSize}
+                                    value={size}
                                     variant="filled"
                                 />
                                 <TextField
